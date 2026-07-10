@@ -1,0 +1,6 @@
+numpy>=1.22.4
+pandas>=1.4.0
+torch>=2.0.0
+yfinance>=0.2.38
+mt5linux>=1.0.3; platform_system == "Linux"
+MetaTrader5>=5.0.4500; platform_system == "Windows"
