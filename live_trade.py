@@ -50,8 +50,8 @@ except ImportError:
 # -----------------------------------------------------------------------------
 # 1. LIVE TRADING CONFIGURATION
 # -----------------------------------------------------------------------------
-MT5_LOGIN = 5052510466                 # <--- ENTER YOUR MT5 ACCOUNT LOGIN HERE
-MT5_PASSWORD = "Q-Ax3uWg"       # <--- ENTER YOUR MT5 PASSWORD HERE
+MT5_LOGIN = 10011686584               # <--- ENTER YOUR MT5 ACCOUNT LOGIN HERE
+MT5_PASSWORD = "SmWIN_X1"       # <--- ENTER YOUR MT5 PASSWORD HERE
 MT5_SERVER = "MetaQuotes-Demo"   # <--- ENTER YOUR MT5 SERVER NAME HERE
 
 # Suffix or prefix for broker symbols (e.g. "EURUSD.m" -> set suffix to ".m")
