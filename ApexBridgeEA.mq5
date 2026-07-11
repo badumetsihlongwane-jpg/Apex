@@ -5,15 +5,22 @@
 input int BridgePollSeconds = 2;
 input int ExportBars = 300;
 input string SymbolsCsv = "EURUSD,GBPUSD,USDJPY,AUDUSD,USDCAD,USDCHF,NZDUSD";
-input bool UseCommonFiles = false;
+input string BridgeDir = "/root/apex/bridge";
 
-string BRIDGE_DIR = "bridge";
-string MARKET_DIR = "bridge/market";
+string BridgeFile(const string fileName)
+{
+   return BridgeDir + "/" + fileName;
+}
+
+string MarketDir()
+{
+   return BridgeDir + "/market";
+}
 
 int OnInit()
 {
    EnsureBridgeFolders();
-   WriteJsonFile("bridge/orders.json", "[]");
+   WriteJsonFile(BridgeFile("orders.json"), "[]");
    WriteStatus();
    WritePositions();
    ExportMarketData();
@@ -43,17 +50,13 @@ void OnTimer()
 
 void EnsureBridgeFolders()
 {
-   int folderFlags = UseCommonFiles ? FILE_COMMON : 0;
-   FolderCreate(BRIDGE_DIR, folderFlags);
-   FolderCreate(MARKET_DIR, folderFlags);
+   FolderCreate(BridgeDir);
+   FolderCreate(MarketDir());
 }
 
 int FileFlags()
 {
-   int flags = FILE_TXT | FILE_ANSI;
-   if(UseCommonFiles)
-      flags |= FILE_COMMON;
-   return flags;
+   return FILE_TXT | FILE_ANSI;
 }
 
 bool ReadTextFile(const string path, string &content)
@@ -347,9 +350,9 @@ bool ExecuteOrderRequest(const string reqJson)
 void ProcessOrders()
 {
    string raw;
-   if(!ReadTextFile("bridge/orders.json", raw))
+   if(!ReadTextFile(BridgeFile("orders.json"), raw))
    {
-      WriteJsonFile("bridge/orders.json", "[]");
+      WriteJsonFile(BridgeFile("orders.json"), "[]");
       return;
    }
 
@@ -372,7 +375,7 @@ void ProcessOrders()
    if(processed > 0)
       Print("Processed bridge orders: ", processed);
 
-   WriteJsonFile("bridge/orders.json", "[]");
+   WriteJsonFile(BridgeFile("orders.json"), "[]");
 }
 
 string BuildStatusJson()
@@ -404,7 +407,7 @@ string BuildStatusJson()
 
 void WriteStatus()
 {
-   WriteJsonFile("bridge/status.json", BuildStatusJson());
+   WriteJsonFile(BridgeFile("status.json"), BuildStatusJson());
 }
 
 string BuildPositionsJson()
@@ -455,7 +458,7 @@ string BuildPositionsJson()
 
 void WritePositions()
 {
-   WriteJsonFile("bridge/positions.json", BuildPositionsJson());
+   WriteJsonFile(BridgeFile("positions.json"), BuildPositionsJson());
 }
 
 string BuildTickJson(const MqlTick &tick)
@@ -520,7 +523,7 @@ void ExportRatesForSymbol(const string symbol, ENUM_TIMEFRAMES timeframe, const 
       return;
 
    ArraySetAsSeries(rates, false);
-   string fileName = MARKET_DIR + "/" + symbol + "_" + fileSuffix + ".json";
+   string fileName = MarketDir() + "/" + symbol + "_" + fileSuffix + ".json";
    WriteJsonFile(fileName, BuildRatesJson(rates));
 }
 
@@ -542,9 +545,9 @@ void ExportMarketData()
 
       MqlTick tick;
       if(SymbolInfoTick(symbol, tick))
-         WriteJsonFile(MARKET_DIR + "/" + symbol + "_tick.json", BuildTickJson(tick));
+         WriteJsonFile(MarketDir() + "/" + symbol + "_tick.json", BuildTickJson(tick));
 
-      WriteJsonFile(MARKET_DIR + "/" + symbol + "_info.json", BuildSymbolInfoJson(symbol));
+      WriteJsonFile(MarketDir() + "/" + symbol + "_info.json", BuildSymbolInfoJson(symbol));
       ExportRatesForSymbol(symbol, PERIOD_M5, "5");
       ExportRatesForSymbol(symbol, PERIOD_M15, "15");
       ExportRatesForSymbol(symbol, PERIOD_H1, "60");
