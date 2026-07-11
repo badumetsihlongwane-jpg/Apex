@@ -10,8 +10,10 @@ from pathlib import Path
 from types import SimpleNamespace
 from typing import Any, Dict, List, Optional
 
-BRIDGE_DIR = "/root/apex/bridge"
-BRIDGE_DIR = os.getenv("BRIDGE_DIR", BRIDGE_DIR)
+BRIDGE_DIR = os.getenv(
+    "BRIDGE_DIR",
+    "/root/.wine/drive_c/Program Files/MetaTrader 5/MQL5/Files/bridge",
+)
 LOCK_TIMEOUT_SECONDS = float(os.getenv("MT5_BRIDGE_LOCK_TIMEOUT", "5"))
 RETRY_DELAY_SECONDS = float(os.getenv("MT5_BRIDGE_RETRY_DELAY", "0.2"))
 MAX_RETRIES = int(os.getenv("MT5_BRIDGE_MAX_RETRIES", "25"))

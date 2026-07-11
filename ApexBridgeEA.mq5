@@ -5,7 +5,7 @@
 input int BridgePollSeconds = 2;
 input int ExportBars = 300;
 input string SymbolsCsv = "EURUSD,GBPUSD,USDJPY,AUDUSD,USDCAD,USDCHF,NZDUSD";
-input string BridgeDir = "/root/apex/bridge";
+input string BridgeDir = "bridge";
 
 string BridgeFile(const string fileName)
 {
