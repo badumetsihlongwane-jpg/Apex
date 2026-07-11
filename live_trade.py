@@ -16,13 +16,7 @@ import torch
 import torch.nn as nn
 import torch.nn.functional as F
 
-try:
-    import MetaTrader5 as mt5
-except ImportError:
-    import subprocess
-    print("[SYSTEM] MetaTrader5 not detected. Installing...")
-    subprocess.check_call([sys.executable, "-m", "pip", "install", "MetaTrader5"])
-    import MetaTrader5 as mt5
+from bridge import mt5_bridge as mt5
 
 warnings.filterwarnings('ignore')
 
