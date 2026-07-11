@@ -10,7 +10,7 @@ from pathlib import Path
 from types import SimpleNamespace
 from typing import Any, Dict, List, Optional
 
-BRIDGE_DIR = "./bridge"
+BRIDGE_DIR = "/root/apex/bridge"
 BRIDGE_DIR = os.getenv("BRIDGE_DIR", BRIDGE_DIR)
 LOCK_TIMEOUT_SECONDS = float(os.getenv("MT5_BRIDGE_LOCK_TIMEOUT", "5"))
 RETRY_DELAY_SECONDS = float(os.getenv("MT5_BRIDGE_RETRY_DELAY", "0.2"))
