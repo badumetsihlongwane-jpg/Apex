@@ -17,6 +17,11 @@ string MarketDir()
    return BridgeDir + "/market";
 }
 
+string MarketFile(const string fileName)
+{
+   return MarketDir() + "/" + fileName;
+}
+
 int OnInit()
 {
    EnsureBridgeFolders();
@@ -523,8 +528,7 @@ void ExportRatesForSymbol(const string symbol, ENUM_TIMEFRAMES timeframe, const 
       return;
 
    ArraySetAsSeries(rates, false);
-   string fileName = MarketDir() + "/" + symbol + "_" + fileSuffix + ".json";
-   WriteJsonFile(fileName, BuildRatesJson(rates));
+   WriteJsonFile(MarketFile(symbol + "_" + fileSuffix + ".json"), BuildRatesJson(rates));
 }
 
 void ExportMarketData()
@@ -545,9 +549,9 @@ void ExportMarketData()
 
       MqlTick tick;
       if(SymbolInfoTick(symbol, tick))
-         WriteJsonFile(MarketDir() + "/" + symbol + "_tick.json", BuildTickJson(tick));
+         WriteJsonFile(MarketFile(symbol + "_tick.json"), BuildTickJson(tick));
 
-      WriteJsonFile(MarketDir() + "/" + symbol + "_info.json", BuildSymbolInfoJson(symbol));
+      WriteJsonFile(MarketFile(symbol + "_info.json"), BuildSymbolInfoJson(symbol));
       ExportRatesForSymbol(symbol, PERIOD_M5, "5");
       ExportRatesForSymbol(symbol, PERIOD_M15, "15");
       ExportRatesForSymbol(symbol, PERIOD_H1, "60");
