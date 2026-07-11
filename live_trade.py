@@ -44,9 +44,9 @@ except ImportError:
 # -----------------------------------------------------------------------------
 # 1. LIVE TRADING CONFIGURATION
 # -----------------------------------------------------------------------------
-MT5_LOGIN = 10011686584               # <--- ENTER YOUR MT5 ACCOUNT LOGIN HERE
-MT5_PASSWORD = "SmWIN_X1"       # <--- ENTER YOUR MT5 PASSWORD HERE
-MT5_SERVER = "MetaQuotes-Demo"   # <--- ENTER YOUR MT5 SERVER NAME HERE
+MT5_LOGIN = os.getenv("MT5_LOGIN")
+MT5_PASSWORD = os.getenv("MT5_PASSWORD")
+MT5_SERVER = os.getenv("MT5_SERVER", "MetaQuotes-Demo")
 
 # Suffix or prefix for broker symbols (e.g. "EURUSD.m" -> set suffix to ".m")
 SYMBOL_PREFIX = ""
@@ -861,7 +861,18 @@ def run_live_inference():
     print(f"[APEX] Model architecture loaded successfully. Weights: '{model_path}'")
     
     print(f"[MT5] Connecting to server {MT5_SERVER}...")
-    if not mt5.initialize(login=MT5_LOGIN, password=MT5_PASSWORD, server=MT5_SERVER):
+    mt5_init_kwargs: Dict[str, Any] = {"server": MT5_SERVER}
+    if MT5_LOGIN and MT5_PASSWORD:
+        try:
+            mt5_init_kwargs["login"] = int(MT5_LOGIN)
+        except ValueError:
+            print(f"[MT5] Invalid MT5_LOGIN value: '{MT5_LOGIN}'. It must be a numeric account ID.")
+            return
+        mt5_init_kwargs["password"] = MT5_PASSWORD
+    elif MT5_LOGIN or MT5_PASSWORD:
+        print("[MT5] Incomplete credentials: both MT5_LOGIN and MT5_PASSWORD must be set. Falling back to terminal-managed session.")
+
+    if not mt5.initialize(**mt5_init_kwargs):
         print(f"[MT5] Connection failed. Error code: {mt5.last_error()}")
         return
         
@@ -871,7 +882,19 @@ def run_live_inference():
         mt5.shutdown()
         return
         
-    print(f"[MT5] Connected successfully! Account: {account_info.login} | Balance: {account_info.balance:.2f} {account_info.currency}")
+    account_login = getattr(account_info, "login", "N/A")
+    account_balance = getattr(account_info, "balance", None)
+    account_currency = getattr(account_info, "currency", "")
+
+    if isinstance(account_balance, (int, float)):
+        balance_display = f"{account_balance:.2f}"
+    elif account_balance is None:
+        balance_display = "N/A"
+    else:
+        balance_display = str(account_balance)
+
+    currency_suffix = f" {account_currency}" if account_currency else ""
+    print(f"[MT5] Connected successfully! Account: {account_login} | Balance: {balance_display}{currency_suffix}")
     
     symbol_map = {pair: get_mt5_symbol(pair) for pair in cfg.PAIRS}
     print(f"[MT5] Symbol Map: {symbol_map}")
